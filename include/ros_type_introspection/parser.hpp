@@ -64,19 +64,22 @@ enum BuiltinType {
   STRING, OTHER
 };
 
+static const char* builtin2Name[] =
+{
+  "BOOL" , "BYTE", "CHAR",
+  "UINT8", "UINT16", "UINT32", "UINT64",
+  "INT8", "INT16", "INT32", "INT64",
+  "FLOAT32", "FLOAT64",
+  "TIME", "DURATION",
+  "STRING", "OTHER"
+};
+
+
 inline std::ostream& operator<<(std::ostream& os, const BuiltinType& c)
 {
-  static const char* names[] =
-  {
-    "BOOL" , "BYTE", "CHAR",
-    "UINT8", "UINT16", "UINT32", "UINT64",
-    "INT8", "INT16", "INT32", "INT64",
-    "FLOAT32", "FLOAT64",
-    "TIME", "DURATION",
-    "STRING", "OTHER"
-  };
 
-  os << names[ static_cast<int>(c) ];
+
+  os << builtin2Name[ static_cast<int>(c) ];
   return os;
 }
 

@@ -74,6 +74,17 @@ struct StringTreeLeaf{
   SString toStr() const;
 };
 
+struct ROSValue{
+    StringTreeLeaf leaf;
+    double value;
+    BuiltinType type_id;
+    ROSValue(StringTreeLeaf stringLeaf, double value, BuiltinType type){
+        this->leaf = stringLeaf;
+        this->value = value;
+        this->type_id = type;
+    }
+};
+
 typedef struct{
   /// Tree that the StringTreeLeaf(s) refer to.
   StringTree tree;
@@ -81,6 +92,7 @@ typedef struct{
   /// List of all those parsed fields that can be represented by a builtin value different from "string".
   /// This list will be filled by the funtion buildRosFlatType.
   std::vector< std::pair<StringTreeLeaf, double> > value;
+  std::vector< ROSValue > values;
 
   /// Ñist of all those parsed fields that can be represented by a builtin value equal to "string".
   /// This list will be filled by the funtion buildRosFlatType.

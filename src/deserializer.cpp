@@ -60,7 +60,7 @@ inline void SkipBytesInBuffer( uint8_t** buffer, int vector_size, const BuiltinT
 }
 
 
-void buildRosFlatTypeImpl(const ROSTypeList& type_list,
+void  buildRosFlatTypeImpl(const ROSTypeList& type_list,
                           const ROSType &type,
                           StringTreeLeaf tree_node, // easier to use copy instead of reference or pointer
                           uint8_t** buffer_ptr,
@@ -91,12 +91,16 @@ void buildRosFlatTypeImpl(const ROSTypeList& type_list,
 
   case FLOAT64: {
     deserializeAndStore = [&](StringTreeLeaf tree_node){
-      flat_container->value.push_back( std::make_pair( std::move(tree_node), (double) ReadFromBuffer<double>(buffer_ptr) ) );
+      double value = (double) ReadFromBuffer<double>(buffer_ptr);
+      flat_container->value.push_back( std::make_pair( std::move(tree_node),  value) );
+      flat_container->values.push_back(ROSValue(std::move(tree_node), value, type.typeID()));
     };
   }break;
   case FLOAT32: {
     deserializeAndStore = [&](StringTreeLeaf tree_node){
-      flat_container->value.push_back( std::make_pair( std::move(tree_node), (double) ReadFromBuffer<float>(buffer_ptr) ) );
+        double value = (double) ReadFromBuffer<float>(buffer_ptr);
+        flat_container->value.push_back( std::make_pair( std::move(tree_node),  value) );
+        flat_container->values.push_back(ROSValue(std::move(tree_node), value, type.typeID()));
     };
   }break;
   case TIME: {
@@ -104,48 +108,66 @@ void buildRosFlatTypeImpl(const ROSTypeList& type_list,
       double sec  = (double) ReadFromBuffer<uint32_t>(buffer_ptr);
       double nsec = (double) ReadFromBuffer<uint32_t>(buffer_ptr);
       flat_container->value.push_back( std::make_pair( std::move(tree_node), (double)( sec + nsec/(1000*1000*1000) ) ) );
+      flat_container->values.push_back(ROSValue(std::move(tree_node),        (double)( sec + nsec/(1000*1000*1000)) , type.typeID()));
     };
   }break;
   case UINT64: {
     deserializeAndStore = [&](StringTreeLeaf tree_node){
-      flat_container->value.push_back( std::make_pair( std::move(tree_node), (double) ReadFromBuffer<uint64_t>(buffer_ptr) ) );
+        double value = (double) ReadFromBuffer<uint64_t>(buffer_ptr);
+        flat_container->value.push_back( std::make_pair( std::move(tree_node),  value) );
+        flat_container->values.push_back(ROSValue(std::move(tree_node), value, type.typeID()));
     };
   }break;
   case INT64: {
     deserializeAndStore = [&](StringTreeLeaf tree_node){
-      flat_container->value.push_back( std::make_pair( std::move(tree_node), (double) ReadFromBuffer<int64_t>(buffer_ptr) ) );
+        double value = (double) ReadFromBuffer<int64_t>(buffer_ptr);
+        flat_container->value.push_back( std::make_pair( std::move(tree_node),  value) );
+        flat_container->values.push_back(ROSValue(std::move(tree_node), value, type.typeID()));
     };
   }break;
   case UINT32: {
     deserializeAndStore = [&](StringTreeLeaf tree_node){
-      flat_container->value.push_back( std::make_pair( std::move(tree_node), (double) ReadFromBuffer<uint32_t>(buffer_ptr) ) );
+        double value = (double) ReadFromBuffer<uint32_t>(buffer_ptr);
+        flat_container->value.push_back( std::make_pair( std::move(tree_node),  value) );
+        flat_container->values.push_back(ROSValue(std::move(tree_node), value, type.typeID()));
     };
   }break;
   case INT32: {
     deserializeAndStore = [&](StringTreeLeaf tree_node){
-      flat_container->value.push_back( std::make_pair( std::move(tree_node), (double) ReadFromBuffer<int32_t>(buffer_ptr) ) );
+        double value = (double) ReadFromBuffer<int32_t>(buffer_ptr);
+        flat_container->value.push_back( std::make_pair( std::move(tree_node),  value) );
+        flat_container->values.push_back(ROSValue(std::move(tree_node), value, type.typeID()));
     };
   }break;
   case UINT16: {
     deserializeAndStore = [&](StringTreeLeaf tree_node){
       flat_container->value.push_back( std::make_pair( std::move(tree_node), (double) ReadFromBuffer<uint16_t>(buffer_ptr) ) );
+      flat_container->values.push_back(ROSValue(std::move(tree_node),        (flat_container->value.end()->second), type.typeID()));
+
     };
   }break;
   case INT16: {
     deserializeAndStore = [&](StringTreeLeaf tree_node){
-      flat_container->value.push_back( std::make_pair( std::move(tree_node), (double) ReadFromBuffer<int16_t>(buffer_ptr) ) );
+        double value = (double) ReadFromBuffer<int16_t>(buffer_ptr);
+        flat_container->value.push_back( std::make_pair( std::move(tree_node),  value) );
+        flat_container->values.push_back(ROSValue(std::move(tree_node), value, type.typeID()));
     };
   }break;
   case BOOL:
   case UINT8: {
     deserializeAndStore = [&](StringTreeLeaf tree_node){
-      flat_container->value.push_back( std::make_pair( std::move(tree_node), (double) ReadFromBuffer<uint8_t>(buffer_ptr) ) );
+        double value = (double) ReadFromBuffer<uint8_t>(buffer_ptr);
+        flat_container->value.push_back( std::make_pair( std::move(tree_node),  value) );
+        flat_container->values.push_back(ROSValue(std::move(tree_node), value, type.typeID()));
+
     };
   }break;
   case BYTE:
   case INT8: {
     deserializeAndStore = [&](StringTreeLeaf tree_node){
-      flat_container->value.push_back( std::make_pair( std::move(tree_node), (double) ReadFromBuffer<int8_t>(buffer_ptr) ) );
+        double value = (double) ReadFromBuffer<int8_t>(buffer_ptr);
+        flat_container->value.push_back( std::make_pair( std::move(tree_node),  value) );
+        flat_container->values.push_back(ROSValue(std::move(tree_node), value, type.typeID()));
     };
   }break;
 
@@ -154,6 +176,7 @@ void buildRosFlatTypeImpl(const ROSTypeList& type_list,
       double sec  = (double) ReadFromBuffer<int32_t>(buffer_ptr);
       double nsec = (double) ReadFromBuffer<int32_t>(buffer_ptr);
       flat_container->value.push_back( std::make_pair( std::move(tree_node), (double)( sec + nsec/(1000*1000*1000) ) ) );
+      flat_container->values.push_back(ROSValue(std::move(tree_node),        (double)( sec + nsec/(1000*1000*1000) ), type.typeID()));
     };
   }break;
 
@@ -253,6 +276,7 @@ void buildRosFlatType(const ROSTypeList& type_map,
   flat_container_output->tree.root()->value() = prefix;
   flat_container_output->name.clear();
   flat_container_output->value.clear();
+  flat_container_output->values.clear();
   flat_container_output->renamed_value.clear();
 
   StringTreeLeaf rootnode;
